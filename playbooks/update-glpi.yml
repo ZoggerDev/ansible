@@ -1,0 +1,42 @@
+- name: Download GLPI version 10.0.9 behind web proxy
+  hosts: glpi-01.gutingia.local
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Set proxy environment variables
+      ansible.builtin.set_fact:
+        env:
+          http_proxy: "http://proxy:8080"
+          https_proxy: "http://proxy:8080"
+
+    - name: Download GLPI archive
+      get_url:
+        url: "https://github.com/glpi-project/glpi/releases/download/10.0.9/glpi-10.0.9.tgz"
+        dest: "/tmp/glpi.tgz"
+        validate_certs: no
+      environment: "{{ env }}"
+
+    - name: Extract GLPI archive
+      ansible.builtin.unarchive:
+        src: "/tmp/glpi.tgz"
+        dest: "/opt"
+        remote_src: yes
+        owner: ladmin
+        group: ladmin
+        mode: "0755"
+#        creates: "/opt/glpi"
+
+#    - name: Set appropriate permissions
+#      ansible.builtin.file:
+#        path: "/opt/glpi"
+#        recurse: yes
+#        owner: www-data
+#        group: www-data
+#        mode: "0755"
+
+#    - name: Update GLPI database
+#      command: php /opt/glpi/bin/console glpi:database:update
+
+#    - name: Clear GLPI cache
+#      command: php /opt/glpi/bin/console glpi:cache:clear

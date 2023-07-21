@@ -1,0 +1,27 @@
+- hosts: windows_test
+  gather_facts: no
+  vars_files:
+    - /home/ladmin/ansible-credentials.yml
+
+  tasks:
+    - name: Erstelle den Zielordner (falls nicht vorhanden)
+      win_file:
+        path: C:\temp\ansible\wupatcher
+        state: directory
+        force: yes
+
+    - name: Kopiere das PowerShell-Skript
+      win_copy:
+        src: /etc/ansible/assets/scripts/hostname.ps1
+        dest: C:\temp\ansible\wupatcher
+
+    - name: Führe PowerShell-Skript aus
+      win_shell: |
+        C:\temp\ansible\wupatcher\hostname.ps1
+      register: ps_script_output
+      environment:
+        PSExecutionPolicyPreference: 'Bypass'
+
+    - name: Zeige das Ergebnis des PowerShell-Skripts
+      debug:
+        var: ps_script_output.stdout_lines
