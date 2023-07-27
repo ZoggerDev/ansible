@@ -1,23 +1,39 @@
 - hosts: windows_test
   gather_facts: no
-  vars_files:
-    - /home/ladmin/ansible-credentials.yml
+  serial: 3
+  
+  vars_prompt:
+    - name: domain_admin_username 
+      prompt: "Domain Admin (bsp. admin@gutingia.local)"
+      private: no
+    - name: domain_admin_password
+      prompt: "Admin passwort"
+      private: yes
+
+  vars:
+    ansible_user: "{{ domain_admin_username }}"
+    ansible_password: "{{ domain_admin_password }}"   
 
   tasks:
-    - name: Erstelle den Zielordner (falls nicht vorhanden)
+    - name: Create Folder wupatcher
       win_file:
         path: C:\temp\ansible\wupatcher
         state: directory
         force: yes
 
-    - name: Kopiere das PowerShell-Skript
+    - name: Copy powershell modules
       win_copy:
-        src: /etc/ansible/assets/scripts/hostname.ps1
+        src: /opt/ansible-assets/powershell/modules
+        dest: C:\Program Files\WindowsPowerShell
+
+    - name: Copy powershell scripts
+      win_copy:
+        src: /opt/ansible-assets/powershell/scripts
         dest: C:\temp\ansible\wupatcher
 
     - name: Führe PowerShell-Skript aus
       win_shell: |
-        C:\temp\ansible\wupatcher\hostname.ps1
+        C:\temp\ansible\wupatcher\scripts\Start.ps1
       register: ps_script_output
       environment:
         PSExecutionPolicyPreference: 'Bypass'

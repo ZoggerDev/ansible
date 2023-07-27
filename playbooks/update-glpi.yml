@@ -1,7 +1,12 @@
-- name: Download GLPI version 10.0.9 behind web proxy
+- name: Update GLPI behind web proxy
   hosts: glpi-01.gutingia.local
   gather_facts: false
   become: true
+
+  vars_prompt:
+    - name: Version
+      prompt: "Gib die version ein die zur aktualisierung benutzt werden soll (bsp. 10.0.9)"
+      private: no
 
   tasks:
     - name: Set proxy environment variables
@@ -12,31 +17,32 @@
 
     - name: Download GLPI archive
       get_url:
-        url: "https://github.com/glpi-project/glpi/releases/download/10.0.9/glpi-10.0.9.tgz"
+        url: "https://github.com/glpi-project/glpi/releases/download/{{ Version }}/glpi-{{ Version }}.tgz"
         dest: "/tmp/glpi.tgz"
         validate_certs: no
       environment: "{{ env }}"
+
+    - name: Clear Version
+      shell: rm -r /opt/glpi/version/*
 
     - name: Extract GLPI archive
       ansible.builtin.unarchive:
         src: "/tmp/glpi.tgz"
         dest: "/opt"
         remote_src: yes
-        owner: ladmin
-        group: ladmin
+        owner: www-data
+        group: www-data
         mode: "0755"
-#        creates: "/opt/glpi"
 
-#    - name: Set appropriate permissions
-#      ansible.builtin.file:
-#        path: "/opt/glpi"
-#        recurse: yes
-#        owner: www-data
-#        group: www-data
-#        mode: "0755"
+    - name: Führe Datenbank-Update durch (Web-Interface)
+      uri:
+        url: https://glpi-01.gutingia.local/glpi
+        method: POST
+        body_format: json
+        body:
+          dbupdate: yes
+        validate_certs: no  # Deaktiviere die SSL-Zertifikatprüfung
+        follow_redirects: all
 
-#    - name: Update GLPI database
-#      command: php /opt/glpi/bin/console glpi:database:update
-
-#    - name: Clear GLPI cache
-#      command: php /opt/glpi/bin/console glpi:cache:clear
+    - name: Clear Install.php
+      shell: rm -r /opt/glpi/install/install.php

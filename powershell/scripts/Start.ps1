@@ -1,3 +1,3 @@
-Import-Module -Name MylifeUpdateWindows
+Import-Module -Name MylifeWUPatcher
 
 Start-MylifeWindowsUpdate
