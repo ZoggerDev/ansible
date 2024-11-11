@@ -1,3 +1,1 @@
-Import-Module -Name MylifeWUPatcher
-
-Start-MylifeWindowsUpdate
+Get-ComputerInfo
