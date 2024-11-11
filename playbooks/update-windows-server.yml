@@ -2,17 +2,17 @@
   gather_facts: no
   serial: 3
   
-  vars_prompt:
-    - name: domain_admin_username 
-      prompt: "Domain Admin (bsp. admin@gutingia.local)"
-      private: no
-    - name: domain_admin_password
-      prompt: "Admin passwort"
-      private: yes
+  # vars_prompt:
+  #   - name: admin 
+  #     prompt: "Domain Admin (bsp. admin@gutingia.local)"
+  #     private: no
+  #   - name: domain_admusernamein_password
+  #     prompt: "Admin passwort"
+  #     private: yes
 
-  vars:
-    ansible_user: "{{ domain_admin_username }}"
-    ansible_password: "{{ domain_admin_password }}"   
+  # vars:
+  #   ansible_user: "{{ admin }}"
+  #   ansible_password: "{{ admin }}"   
 
   tasks:
     - name: Create Folder wupatcher
