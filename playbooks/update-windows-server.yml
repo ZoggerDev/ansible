@@ -23,12 +23,12 @@
 
     - name: Copy powershell modules
       win_copy:
-        src: /opt/ansible-assets/powershell/modules
+        src: ../powershell/modules
         dest: C:\Program Files\WindowsPowerShell
 
     - name: Copy powershell scripts
       win_copy:
-        src: /opt/ansible-assets/powershell/scripts
+        src: ../powershell/scripts
         dest: C:\temp\ansible\wupatcher
 
     - name: Führe PowerShell-Skript aus
