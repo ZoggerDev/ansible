@@ -1,5 +1,5 @@
 - name: Patch Linux Servers
-  hosts: linux_server
+  hosts: site
   become: yes
 
   tasks:
